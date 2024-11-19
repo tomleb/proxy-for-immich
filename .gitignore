@@ -1,0 +1,10 @@
+**/node_modules/**
+
+.DS_Store
+.vscode/*
+!.vscode/launch.json
+.idea
+
+open-api/typescript-sdk/build
+
+vite.config.js.timestamp-*

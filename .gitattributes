@@ -1,0 +1,4 @@
+open-api/typescript-sdk/fetch-client.ts -diff -merge
+open-api/typescript-sdk/fetch-client.ts linguist-generated=true
+
+*.sh text eol=lf

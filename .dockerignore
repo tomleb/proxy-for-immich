@@ -1,0 +1,12 @@
+.vscode/
+.github/
+.git/
+
+open-api/typescript-sdk/build/
+open-api/typescript-sdk/node_modules/
+
+web/node_modules/
+web/coverage/
+web/.svelte-kit
+web/build/
+web/.env

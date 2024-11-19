@@ -1,0 +1,12 @@
+---
+services:
+  immich-proxy:
+    image: tomleb/immich-proxy:latest
+    restart: unless-stopped
+    ports:
+    - 8080:8080
+    environment:
+    # Your actual immich instance (eg: can be localhost:<port>, etc)
+    - IMMICH_SERVER_URL=https://demo.immich.app
+    # Overrides the Host HTTP header with this
+    - IMMICH_HOST=demo.immich.app

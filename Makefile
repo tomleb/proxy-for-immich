@@ -1,4 +1,4 @@
-DOCKER_IMAGE ?= tomleb/immich-proxy:latest
+DOCKER_IMAGE ?= ghcr.io/tomleb/immich-proxy:release
 
 build-image:
 	docker buildx build --output=type=image,name=$(DOCKER_IMAGE) .

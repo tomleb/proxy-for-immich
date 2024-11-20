@@ -8,7 +8,12 @@ immich web UI.
 
 # Features
 
-- Exactly the same as immich
+- 📥 Download photos individually or whole albums
+- 🚫 Upload disabled for enhanced security
+- 🎞️ View slideshow of albums
+- 🔒 Supports password-protected albums
+- 🌐 Translated in many languages. See [i18n/](./i18n).
+- 🌓 Light and dark theme
 
 # How to
 
@@ -41,11 +46,19 @@ previously.
 
 # How does it work
 
-The proxy keeps an allow-list for request paths in
-[immich OpenAPI spec](open-api/immich-openapi-specs.json). Request to those paths
-are proxied to your immich instance, the others return an error.
+The project maintains a [read-only OpenAPI
+specification](open-api/immich-openapi-specs.json) of the immich API. The proxy
+then derives authorized paths from this spec. Authorized paths are forwarded to
+the Immich instance, while unauthorized requests are blocked.
 
-A stripped down version of immich's web UI is maintained in this repo.
+A stripped down version of immich's web UI is maintained in this repo. This
+makes it work with the read-only API (eg: removes upload buttons, etc).
+
+# Alternatives
+
+There also exists some alternatives with different approaches:
+- https://github.com/11notes/docker-immich-share-proxy
+- https://github.com/alangrainger/immich-public-proxy
 
 # License
 

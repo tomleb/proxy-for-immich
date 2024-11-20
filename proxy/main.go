@@ -17,6 +17,7 @@ var (
 	upstream        string
 	host            string
 	webDir          string
+	debug           bool
 )
 
 func main() {
@@ -25,11 +26,16 @@ func main() {
 	flag.StringVar(&upstream, "upstream", "", "Upstream server URL")
 	flag.StringVar(&host, "host", "", "Host header value")
 	flag.StringVar(&webDir, "web-dir", "", "Directory to immich web")
+	flag.BoolVar(&debug, "debug", false, "Enable debug logging")
 	flag.Parse()
 
 	if host == "" || openAPISpecFile == "" || upstream == "" || webDir == "" {
 		flag.Usage()
 		os.Exit(1)
+	}
+
+	if debug {
+		slog.SetLogLoggerLevel(slog.LevelDebug.Level())
 	}
 
 	if err := mainErr(); err != nil {
@@ -50,8 +56,8 @@ func mainErr() error {
 	}
 
 	mux := http.NewServeMux()
-	mux.Handle("/api/*", FilterOpenAPIPaths(apiReverseProxy, doc))
-	mux.Handle("/*", FileServerWithFallback(webDir))
+	mux.Handle("/api/*", Trace(FilterOpenAPIPaths(apiReverseProxy, doc)))
+	mux.Handle("/*", Trace(FileServerWithFallback(webDir)))
 
 	server := &http.Server{
 		Addr:    listenAddr,

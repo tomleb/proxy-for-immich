@@ -390,14 +390,6 @@ export function searchStacks({ primaryAssetId }: {
         ...opts
     }));
 }
-export function deleteStack({ id }: {
-    id: string;
-}, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchText(`/stacks/${encodeURIComponent(id)}`, {
-        ...opts,
-        method: "DELETE"
-    }));
-}
 export function getStack({ id }: {
     id: string;
 }, opts?: Oazapfts.RequestOpts) {

@@ -27,10 +27,10 @@ COPY --from=openapi-gen-build /usr/src/open-api/typescript-sdk/ /
 
 # Builds immich's web UI
 FROM node:22.10.0-alpine3.20@sha256:fc95a044b87e95507c60c1f8c829e5d98ddf46401034932499db370c494ef0ff AS web
-COPY --link --from=openapi-gen-build /usr/src/open-api/typescript-sdk /usr/src/open-api/typescript-sdk
 WORKDIR /usr/src/app
 COPY web/package*.json web/svelte.config.js ./
 RUN npm ci
+COPY --link --from=openapi-gen-build /usr/src/open-api/typescript-sdk /usr/src/open-api/typescript-sdk
 COPY web ./
 COPY i18n ../i18n
 RUN npm run build

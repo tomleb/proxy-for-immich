@@ -8,6 +8,13 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
+func Trace(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		slog.Debug("Received request", "path", req.URL.Path, "query", req.URL.RawQuery)
+		next.ServeHTTP(w, req)
+	})
+}
+
 func FilterOpenAPIPaths(next http.Handler, doc *openapi3.T) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		trimmedPath := strings.TrimPrefix(req.URL.Path, "/api")

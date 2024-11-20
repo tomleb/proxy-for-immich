@@ -197,9 +197,6 @@ export type StackResponseDto = {
     id: string;
     primaryAssetId: string;
 };
-export type TagUpdateDto = {
-    color?: string | null;
-};
 export type TimeBucketResponseDto = {
     count: number;
     timeBucket: string;
@@ -406,19 +403,6 @@ export function getTagById({ id }: {
     }>(`/tags/${encodeURIComponent(id)}`, {
         ...opts
     }));
-}
-export function updateTag({ id, tagUpdateDto }: {
-    id: string;
-    tagUpdateDto: TagUpdateDto;
-}, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: TagResponseDto;
-    }>(`/tags/${encodeURIComponent(id)}`, oazapfts.json({
-        ...opts,
-        method: "PUT",
-        body: tagUpdateDto
-    })));
 }
 export function getTimeBucket({ albumId, isArchived, isFavorite, isTrashed, key, order, personId, size, tagId, timeBucket, userId, withPartners, withStacked }: {
     albumId?: string;

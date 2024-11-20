@@ -15,7 +15,7 @@ immich web UI.
 1. Download the docker compose file
 
 ```sh
-wget https://github.com/tomleb/proxy-for-immich/...
+wget https://raw.githubusercontent.com/tomleb/proxy-for-immich/refs/heads/main/compose.yaml
 ```
 
 2. Edit the environment variables in the `compose.yaml` file.

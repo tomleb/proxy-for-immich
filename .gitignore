@@ -5,6 +5,8 @@
 !.vscode/launch.json
 .idea
 
+build/
+
 open-api/typescript-sdk/build
 
 vite.config.js.timestamp-*

@@ -197,20 +197,6 @@ export type StackResponseDto = {
     id: string;
     primaryAssetId: string;
 };
-export type StackUpdateDto = {
-    primaryAssetId?: string;
-};
-export type TagCreateDto = {
-    color?: string;
-    name: string;
-    parentId?: string | null;
-};
-export type TagUpsertDto = {
-    tags: string[];
-};
-export type TagUpdateDto = {
-    color?: string | null;
-};
 export type TimeBucketResponseDto = {
     count: number;
     timeBucket: string;
@@ -390,14 +376,6 @@ export function searchStacks({ primaryAssetId }: {
         ...opts
     }));
 }
-export function deleteStack({ id }: {
-    id: string;
-}, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchText(`/stacks/${encodeURIComponent(id)}`, {
-        ...opts,
-        method: "DELETE"
-    }));
-}
 export function getStack({ id }: {
     id: string;
 }, opts?: Oazapfts.RequestOpts) {
@@ -408,57 +386,12 @@ export function getStack({ id }: {
         ...opts
     }));
 }
-export function updateStack({ id, stackUpdateDto }: {
-    id: string;
-    stackUpdateDto: StackUpdateDto;
-}, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: StackResponseDto;
-    }>(`/stacks/${encodeURIComponent(id)}`, oazapfts.json({
-        ...opts,
-        method: "PUT",
-        body: stackUpdateDto
-    })));
-}
 export function getAllTags(opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: TagResponseDto[];
     }>("/tags", {
         ...opts
-    }));
-}
-export function createTag({ tagCreateDto }: {
-    tagCreateDto: TagCreateDto;
-}, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 201;
-        data: TagResponseDto;
-    }>("/tags", oazapfts.json({
-        ...opts,
-        method: "POST",
-        body: tagCreateDto
-    })));
-}
-export function upsertTags({ tagUpsertDto }: {
-    tagUpsertDto: TagUpsertDto;
-}, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: TagResponseDto[];
-    }>("/tags", oazapfts.json({
-        ...opts,
-        method: "PUT",
-        body: tagUpsertDto
-    })));
-}
-export function deleteTag({ id }: {
-    id: string;
-}, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchText(`/tags/${encodeURIComponent(id)}`, {
-        ...opts,
-        method: "DELETE"
     }));
 }
 export function getTagById({ id }: {
@@ -470,19 +403,6 @@ export function getTagById({ id }: {
     }>(`/tags/${encodeURIComponent(id)}`, {
         ...opts
     }));
-}
-export function updateTag({ id, tagUpdateDto }: {
-    id: string;
-    tagUpdateDto: TagUpdateDto;
-}, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: TagResponseDto;
-    }>(`/tags/${encodeURIComponent(id)}`, oazapfts.json({
-        ...opts,
-        method: "PUT",
-        body: tagUpdateDto
-    })));
 }
 export function getTimeBucket({ albumId, isArchived, isFavorite, isTrashed, key, order, personId, size, tagId, timeBucket, userId, withPartners, withStacked }: {
     albumId?: string;

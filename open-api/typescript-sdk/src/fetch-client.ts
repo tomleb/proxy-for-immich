@@ -197,11 +197,6 @@ export type StackResponseDto = {
     id: string;
     primaryAssetId: string;
 };
-export type TagCreateDto = {
-    color?: string;
-    name: string;
-    parentId?: string | null;
-};
 export type TagUpsertDto = {
     tags: string[];
 };
@@ -404,18 +399,6 @@ export function getAllTags(opts?: Oazapfts.RequestOpts) {
     }>("/tags", {
         ...opts
     }));
-}
-export function createTag({ tagCreateDto }: {
-    tagCreateDto: TagCreateDto;
-}, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 201;
-        data: TagResponseDto;
-    }>("/tags", oazapfts.json({
-        ...opts,
-        method: "POST",
-        body: tagCreateDto
-    })));
 }
 export function upsertTags({ tagUpsertDto }: {
     tagUpsertDto: TagUpsertDto;

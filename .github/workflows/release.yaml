@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build_and_push_server:
+  build_and_push_proxy:
     name: Build and Push Proxy
     runs-on: ubuntu-latest
     env:
@@ -58,6 +58,6 @@ jobs:
         context: ${{ env.context }}
         file: ${{ env.file }}
         platforms: ${{ matrix.platforms }}
-        push: false
+        push: true
         tags: ${{ steps.metadata.outputs.tags }}
         labels: ${{ steps.metadata.outputs.labels }}

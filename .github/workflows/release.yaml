@@ -1,15 +1,13 @@
 name: Release
 
 on:
-  push:
-    tags:
-      - v*
   pull_request:
     branches: [main]
-  workflow_dispatch:
+  release:
+    types: [published]
 
 jobs:
-  build_and_push_server:
+  build_and_push_proxy:
     name: Build and Push Proxy
     runs-on: ubuntu-latest
     env:
@@ -21,6 +19,8 @@ jobs:
       matrix:
         include:
         - platforms: linux/amd64,linux/arm64
+    permissions:
+      packages: write
     steps:
     - name : Checkout repository
       uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
@@ -58,6 +58,6 @@ jobs:
         context: ${{ env.context }}
         file: ${{ env.file }}
         platforms: ${{ matrix.platforms }}
-        push: false
+        push: true
         tags: ${{ steps.metadata.outputs.tags }}
         labels: ${{ steps.metadata.outputs.labels }}

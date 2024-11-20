@@ -412,14 +412,6 @@ export function upsertTags({ tagUpsertDto }: {
         body: tagUpsertDto
     })));
 }
-export function deleteTag({ id }: {
-    id: string;
-}, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchText(`/tags/${encodeURIComponent(id)}`, {
-        ...opts,
-        method: "DELETE"
-    }));
-}
 export function getTagById({ id }: {
     id: string;
 }, opts?: Oazapfts.RequestOpts) {

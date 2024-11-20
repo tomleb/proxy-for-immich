@@ -1,7 +1,7 @@
 ---
 services:
   immich-proxy:
-    image: tomleb/immich-proxy:latest
+    image: ghcr.io/tomleb/immich-proxy:release
     restart: unless-stopped
     ports:
     - 8080:8080

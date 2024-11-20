@@ -51,6 +51,8 @@ jobs:
           # Tag with pr-number
           type=ref,event=pr,suffix=${{ matrix.suffix }}
           type=ref,event=tag,suffix=${{ matrix.suffix }}
+          # Immich uses :release instead of :latest, let's use that too
+          type=raw,value=release,enable=${{ github.event_name == 'release' }},suffix=${{ matrix.suffix }}
 
     - name: Build and push image
       uses: docker/build-push-action@v6.9.0

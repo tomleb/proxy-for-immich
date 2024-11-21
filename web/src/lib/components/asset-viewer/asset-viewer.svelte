@@ -6,7 +6,6 @@
   import PreviousAssetAction from '$lib/components/asset-viewer/actions/previous-asset-action.svelte';
   import { AssetAction, ProjectionType } from '$lib/constants';
   import { updateNumberOfComments } from '$lib/stores/activity.store';
-  import { closeEditorCofirm } from '$lib/stores/asset-editor.store';
   import { assetViewingStore } from '$lib/stores/asset-viewing.store';
   import type { AssetStore } from '$lib/stores/assets.store';
   import { isShowDetail } from '$lib/stores/preferences.store';
@@ -31,8 +30,6 @@
   import { NotificationType, notificationController } from '../shared-components/notification/notification';
   import AssetViewerNavBar from './asset-viewer-nav-bar.svelte';
   import DetailPanel from './detail-panel.svelte';
-  import CropArea from './editor/crop-tool/crop-area.svelte';
-  import EditorPanel from './editor/editor-panel.svelte';
   import PhotoViewer from './photo-viewer.svelte';
   import SlideshowBar from './slideshow-bar.svelte';
   import VideoViewer from './video-wrapper-viewer.svelte';
@@ -188,12 +185,6 @@
 
   const closeViewer = () => {
     onClose({ asset });
-  };
-
-  const closeEditor = () => {
-    closeEditorCofirm(() => {
-      isShowEditor = false;
-    });
   };
 
   const navigateAssetRandom = async () => {
@@ -426,8 +417,6 @@
                 .toLowerCase()
                 .endsWith('.insp'))}
             <ImagePanoramaViewer {asset} />
-          {:else if isShowEditor && selectedEditType === 'crop'}
-            <CropArea {asset} />
           {:else}
             <PhotoViewer
               bind:zoomToggle
@@ -472,17 +461,6 @@
       translate="yes"
     >
       <DetailPanel {asset} currentAlbum={album} albums={appearsInAlbums} onClose={() => ($isShowDetail = false)} />
-    </div>
-  {/if}
-
-  {#if isShowEditor}
-    <div
-      transition:fly={{ duration: 150 }}
-      id="editor-panel"
-      class="z-[1002] row-start-1 row-span-4 w-[400px] overflow-y-auto bg-immich-bg transition-all dark:border-l dark:border-l-immich-dark-gray dark:bg-immich-dark-bg"
-      translate="yes"
-    >
-      <EditorPanel {asset} onUpdateSelectedType={handleUpdateSelectedEditType} onClose={closeEditor} />
     </div>
   {/if}
 

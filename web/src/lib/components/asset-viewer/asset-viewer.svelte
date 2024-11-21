@@ -11,7 +11,6 @@
   import { isShowDetail } from '$lib/stores/preferences.store';
   import { SlideshowNavigation, SlideshowState, slideshowStore } from '$lib/stores/slideshow.store';
   import { user } from '$lib/stores/user.store';
-  import { websocketEvents } from '$lib/stores/websocket';
   import { getSharedLink, handlePromiseError, isSharedLink } from '$lib/utils';
   import { handleError } from '$lib/utils/handle-error';
   import { SlideshowHistory } from '$lib/utils/slideshow-history';
@@ -85,7 +84,6 @@
   let isShowEditor = $state(false);
   let numberOfComments = $state(0);
   let fullscreenElement = $state<Element>();
-  let unsubscribes: (() => void)[] = [];
   let selectedEditType: string = $state('');
   let stack: StackResponseDto | null = $state(null);
 
@@ -118,11 +116,6 @@
   };
 
   onMount(async () => {
-    unsubscribes.push(
-      websocketEvents.on('on_upload_success', onAssetUpdate),
-      websocketEvents.on('on_asset_update', onAssetUpdate),
-    );
-
     slideshowStateUnsubscribe = slideshowState.subscribe((value) => {
       if (value === SlideshowState.PlaySlideshow) {
         slideshowHistory.reset();
@@ -152,10 +145,6 @@
 
     if (shuffleSlideshowUnsubscribe) {
       shuffleSlideshowUnsubscribe();
-    }
-
-    for (const unsubscribe of unsubscribes) {
-      unsubscribe();
     }
   });
 

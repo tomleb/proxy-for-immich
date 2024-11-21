@@ -10,9 +10,8 @@ import createJustifiedLayout from 'justified-layout';
 import { throttle } from 'lodash-es';
 import { DateTime } from 'luxon';
 import { t } from 'svelte-i18n';
-import { get, writable, type Unsubscriber } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import { handleError } from '../utils/handle-error';
-import { websocketEvents } from './websocket';
 type AssetApiGetTimeBucketsRequest = Parameters<typeof getTimeBuckets>[0];
 export type AssetStoreOptions = Omit<AssetApiGetTimeBucketsRequest, 'size'>;
 
@@ -207,7 +206,6 @@ type DateGroupHeightEvent = {
 export class AssetStore {
   private assetToBucket: Record<string, AssetLookup> = {};
   private pendingChanges: PendingChange[] = [];
-  private unsubscribers: Unsubscriber[] = [];
   private options!: AssetApiGetTimeBucketsRequest;
   private viewport: Viewport = {
     height: 0,
@@ -258,96 +256,11 @@ export class AssetStore {
     this.complete.catch(() => void 0);
   }
 
-  private addPendingChanges(...changes: PendingChange[]) {
-    // prevent websocket events from happening before local client events
-    setTimeout(() => {
-      this.pendingChanges.push(...changes);
-      this.processPendingChanges();
-    }, 1000);
-  }
-
   connect() {
-    this.unsubscribers.push(
-      websocketEvents.on('on_upload_success', (_) => {
-        // TODO!: Temporarily disable to avoid flashing effect of the timeline
-        // this.addPendingChanges({ type: 'add', values: [asset] });
-      }),
-      websocketEvents.on('on_asset_trash', (ids) => {
-        this.addPendingChanges({ type: 'trash', values: ids });
-      }),
-      websocketEvents.on('on_asset_update', (asset) => {
-        this.addPendingChanges({ type: 'update', values: [asset] });
-      }),
-      websocketEvents.on('on_asset_delete', (id: string) => {
-        this.addPendingChanges({ type: 'delete', values: [id] });
-      }),
-    );
   }
 
   disconnect() {
-    for (const unsubscribe of this.unsubscribers) {
-      unsubscribe();
-    }
-    this.unsubscribers = [];
   }
-
-  private getPendingChangeBatches() {
-    const batches: PendingChange[] = [];
-    let batch: PendingChange | undefined;
-
-    for (const { type, values: _values } of this.pendingChanges) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const values = _values as any[];
-
-      if (batch && batch.type !== type) {
-        batches.push(batch);
-        batch = undefined;
-      }
-
-      if (batch) {
-        batch.values.push(...values);
-      } else {
-        batch = { type, values };
-      }
-    }
-
-    if (batch) {
-      batches.push(batch);
-    }
-
-    return batches;
-  }
-
-  processPendingChanges = throttle(() => {
-    for (const { type, values } of this.getPendingChangeBatches()) {
-      switch (type) {
-        case 'add': {
-          this.addAssets(values);
-          break;
-        }
-
-        case 'update': {
-          this.updateAssets(values);
-          break;
-        }
-
-        case 'trash': {
-          if (!this.options.isTrashed) {
-            this.removeAssets(values);
-          }
-          break;
-        }
-
-        case 'delete': {
-          this.removeAssets(values);
-          break;
-        }
-      }
-    }
-
-    this.pendingChanges = [];
-    this.emit(true);
-  }, 2500);
 
   addListener(bucketListener: BucketListener) {
     this.listeners.push(bucketListener);

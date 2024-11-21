@@ -1,19 +1,23 @@
 <script lang="ts">
   import Icon from '$lib/components/elements/icon.svelte';
+  import { handleError } from '$lib/utils/handle-error';
   import { type AssetResponseDto } from '@immich/sdk';
-  import { mdiMapMarkerOutline } from '@mdi/js';
+  import { mdiMapMarkerOutline, mdiPencil } from '@mdi/js';
   import { t } from 'svelte-i18n';
 
-  export let isOwner: boolean;
-  export let asset: AssetResponseDto;
+  interface Props {
+    isOwner: boolean;
+    asset: AssetResponseDto;
+  }
+
+  let { isOwner, asset = $bindable() }: Props = $props();
+
 </script>
 
 {#if asset.exifInfo?.country}
   <button
     type="button"
     class="flex w-full text-left justify-between place-items-start gap-4 py-4"
-    class:hover:dark:text-immich-dark-primary={isOwner}
-    class:hover:text-immich-primary={isOwner}
   >
     <div class="flex gap-4">
       <div><Icon path={mdiMapMarkerOutline} size="24" /></div>

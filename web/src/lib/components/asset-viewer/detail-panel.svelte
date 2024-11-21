@@ -2,7 +2,9 @@
   import { goto } from '$app/navigation';
   import DetailPanelDescription from '$lib/components/asset-viewer/detail-panel-description.svelte';
   import DetailPanelLocation from '$lib/components/asset-viewer/detail-panel-location.svelte';
+  import DetailPanelTags from '$lib/components/asset-viewer/detail-panel-tags.svelte';
   import Icon from '$lib/components/elements/icon.svelte';
+  import ChangeDate from '$lib/components/shared-components/change-date.svelte';
   import { AppRoute, QueryParameter, timeToLoadTheMap } from '$lib/constants';
   import { boundingBoxesArray } from '$lib/stores/people.store';
   import { locale } from '$lib/stores/preferences.store';
@@ -41,10 +43,14 @@
   import AlbumListItemDetails from './album-list-item-details.svelte';
   import Portal from '$lib/components/shared-components/portal/portal.svelte';
 
-  export let asset: AssetResponseDto;
-  export let albums: AlbumResponseDto[] = [];
-  export let currentAlbum: AlbumResponseDto | null = null;
-  export let onClose: () => void;
+  interface Props {
+    asset: AssetResponseDto;
+    albums?: AlbumResponseDto[];
+    currentAlbum?: AlbumResponseDto | null;
+    onClose: () => void;
+  }
+
+  let { asset, albums = [], currentAlbum = null, onClose }: Props = $props();
 
   const getDimensions = (exifInfo: ExifResponseDto) => {
     const { exifImageWidth: width, exifImageHeight: height } = exifInfo;
@@ -55,11 +61,11 @@
     return { width, height };
   };
 
-  let showAssetPath = false;
-  let showEditFaces = false;
-  let previousId: string;
+  let showAssetPath = $state(false);
+  let showEditFaces = $state(false);
+  let previousId: string | undefined = $state();
 
-  $: {
+  $effect(() => {
     if (!previousId) {
       previousId = asset.id;
     }
@@ -67,9 +73,9 @@
       showEditFaces = false;
       previousId = asset.id;
     }
-  }
+  });
 
-  $: isOwner = $user?.id === asset.ownerId;
+  let isOwner = $derived($user?.id === asset.ownerId);
 
   const handleNewAsset = async (newAsset: AssetResponseDto) => {
     // TODO: check if reloading asset data is necessary
@@ -80,27 +86,30 @@
     }
   };
 
-  $: handlePromiseError(handleNewAsset(asset));
+  $effect(() => {
+    handlePromiseError(handleNewAsset(asset));
+  });
 
-  $: latlng = (() => {
-    const lat = asset.exifInfo?.latitude;
-    const lng = asset.exifInfo?.longitude;
+  let latlng = $derived(
+    (() => {
+      const lat = asset.exifInfo?.latitude;
+      const lng = asset.exifInfo?.longitude;
 
-    if (lat && lng) {
-      return { lat: Number(lat.toFixed(7)), lng: Number(lng.toFixed(7)) };
-    }
-  })();
+      if (lat && lng) {
+        return { lat: Number(lat.toFixed(7)), lng: Number(lng.toFixed(7)) };
+      }
+    })(),
+  );
 
-  $: people = asset.people || [];
-  $: showingHiddenPeople = false;
-
-  $: unassignedFaces = asset.unassignedFaces || [];
-
-  $: timeZone = asset.exifInfo?.timeZone;
-  $: dateTime =
+  let people = $state(asset.people || []);
+  let unassignedFaces = $state(asset.unassignedFaces || []);
+  let showingHiddenPeople = $state(false);
+  let timeZone = $derived(asset.exifInfo?.timeZone);
+  let dateTime = $derived(
     timeZone && asset.exifInfo?.dateTimeOriginal
       ? fromDateTimeOriginal(asset.exifInfo.dateTimeOriginal, timeZone)
-      : fromLocalDateTime(asset.localDateTime);
+      : fromLocalDateTime(asset.localDateTime),
+  );
 
   const getMegapixel = (width: number, height: number): number | undefined => {
     const megapixel = Math.round((height * width) / 1_000_000);
@@ -112,14 +121,21 @@
     return undefined;
   };
 
+  const handleRefreshPeople = async () => {
+    await getAssetInfo({ id: asset.id }).then((data) => {
+      people = data?.people || [];
+      unassignedFaces = data?.unassignedFaces || [];
+    });
+    showEditFaces = false;
+  };
+
   const toggleAssetPath = () => (showAssetPath = !showAssetPath);
 
-  let isShowChangeDate = false;
 </script>
 
 <section class="relative p-2 dark:bg-immich-dark-bg dark:text-immich-dark-fg">
   <div class="flex place-items-center gap-2">
-    <CircleIconButton icon={mdiClose} title={$t('close')} on:click={onClose} />
+    <CircleIconButton icon={mdiClose} title={$t('close')} onclick={onClose} />
     <p class="text-lg text-immich-fg dark:text-immich-dark-fg">{$t('info')}</p>
   </div>
 
@@ -160,10 +176,7 @@
       <button
         type="button"
         class="flex w-full text-left justify-between place-items-start gap-4 py-4"
-        on:click={() => (isOwner ? (isShowChangeDate = true) : null)}
-        title={isOwner ? $t('edit_date') : ''}
-        class:hover:dark:text-immich-dark-primary={isOwner}
-        class:hover:text-immich-primary={isOwner}
+        title=""
       >
         <div class="flex gap-4">
           <div>
@@ -228,7 +241,7 @@
               title={$t('show_file_location')}
               size="16"
               padding="2"
-              on:click={toggleAssetPath}
+              onclick={toggleAssetPath}
             />
           {/if}
         </p>
@@ -299,8 +312,7 @@
         </div>
       {/await}
     {:then component}
-      <svelte:component
-        this={component.default}
+      <component.default
         mapMarkers={[
           {
             lat: latlng.lat,
@@ -317,7 +329,7 @@
         useLocationPin
         onOpenInMapView={() => goto(`${AppRoute.MAP}#12.5/${latlng.lat}/${latlng.lng}`)}
       >
-        <svelte:fragment slot="popup" let:marker>
+        {#snippet popup({ marker })}
           {@const { lat, lon } = marker}
           <div class="flex flex-col items-center gap-1">
             <p class="font-bold">{lat.toPrecision(6)}, {lon.toPrecision(6)}</p>
@@ -329,8 +341,8 @@
               {$t('open_in_openstreetmap')}
             </a>
           </div>
-        </svelte:fragment>
-      </svelte:component>
+        {/snippet}
+      </component.default>
     {/await}
   </div>
 {/if}
@@ -379,5 +391,11 @@
         </div>
       </a>
     {/each}
+  </section>
+{/if}
+
+{#if $preferences?.tags?.enabled}
+  <section class="relative px-2 pb-12 dark:bg-immich-dark-bg dark:text-immich-dark-fg">
+    <DetailPanelTags {asset} {isOwner} />
   </section>
 {/if}

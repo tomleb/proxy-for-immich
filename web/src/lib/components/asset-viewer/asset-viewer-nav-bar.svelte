@@ -12,7 +12,6 @@
   import { photoZoomState } from '$lib/stores/zoom-image.store';
   import { getSharedLink } from '$lib/utils';
   import {
-    AssetJobName,
     AssetTypeEnum,
     type AlbumResponseDto,
     type AssetResponseDto,
@@ -45,7 +44,6 @@
     onZoomImage: () => void;
     onCopyImage?: () => Promise<void>;
     onAction: OnAction;
-    onRunJob: (name: AssetJobName) => void;
     onPlaySlideshow: () => void;
     onShowDetail: () => void;
     // export let showEditorHandler: () => void;
@@ -62,7 +60,6 @@
     onZoomImage,
     onCopyImage,
     onAction,
-    onRunJob,
     onPlaySlideshow,
     onShowDetail,
     onClose,

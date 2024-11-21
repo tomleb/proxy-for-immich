@@ -2,7 +2,6 @@
   import { goto } from '$app/navigation';
   import DetailPanelDescription from '$lib/components/asset-viewer/detail-panel-description.svelte';
   import DetailPanelLocation from '$lib/components/asset-viewer/detail-panel-location.svelte';
-  import DetailPanelTags from '$lib/components/asset-viewer/detail-panel-tags.svelte';
   import Icon from '$lib/components/elements/icon.svelte';
   import ChangeDate from '$lib/components/shared-components/change-date.svelte';
   import { AppRoute, QueryParameter, timeToLoadTheMap } from '$lib/constants';
@@ -302,51 +301,6 @@
   </div>
 </section>
 
-{#if latlng && $featureFlags.loaded && $featureFlags.map}
-  <div class="h-[360px]">
-    {#await import('../shared-components/map/map.svelte')}
-      {#await delay(timeToLoadTheMap) then}
-        <!-- show the loading spinner only if loading the map takes too much time -->
-        <div class="flex items-center justify-center h-full w-full">
-          <LoadingSpinner />
-        </div>
-      {/await}
-    {:then component}
-      <component.default
-        mapMarkers={[
-          {
-            lat: latlng.lat,
-            lon: latlng.lng,
-            id: asset.id,
-            city: asset.exifInfo?.city ?? null,
-            state: asset.exifInfo?.state ?? null,
-            country: asset.exifInfo?.country ?? null,
-          },
-        ]}
-        center={latlng}
-        zoom={12.5}
-        simplified
-        useLocationPin
-        onOpenInMapView={() => goto(`${AppRoute.MAP}#12.5/${latlng.lat}/${latlng.lng}`)}
-      >
-        {#snippet popup({ marker })}
-          {@const { lat, lon } = marker}
-          <div class="flex flex-col items-center gap-1">
-            <p class="font-bold">{lat.toPrecision(6)}, {lon.toPrecision(6)}</p>
-            <a
-              href="https://www.openstreetmap.org/?mlat={lat}&mlon={lon}&zoom=13#map=15/{lat}/{lon}"
-              target="_blank"
-              class="font-medium text-immich-primary"
-            >
-              {$t('open_in_openstreetmap')}
-            </a>
-          </div>
-        {/snippet}
-      </component.default>
-    {/await}
-  </div>
-{/if}
-
 {#if currentAlbum && currentAlbum.albumUsers.length > 0 && asset.owner}
   <section class="px-6 dark:text-immich-dark-fg mt-4">
     <p class="text-sm">{$t('shared_by').toUpperCase()}</p>
@@ -391,11 +345,5 @@
         </div>
       </a>
     {/each}
-  </section>
-{/if}
-
-{#if $preferences?.tags?.enabled}
-  <section class="relative px-2 pb-12 dark:bg-immich-dark-bg dark:text-immich-dark-fg">
-    <DetailPanelTags {asset} {isOwner} />
   </section>
 {/if}

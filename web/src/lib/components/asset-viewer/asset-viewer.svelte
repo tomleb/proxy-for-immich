@@ -18,15 +18,8 @@
   import { SlideshowHistory } from '$lib/utils/slideshow-history';
   import {
     AssetTypeEnum,
-    ReactionType,
-    createActivity,
-    deleteActivity,
-    getActivities,
-    getActivityStatistics,
     getAllAlbums,
     getStack,
-    runAssetJobs,
-    type ActivityResponseDto,
     type AlbumResponseDto,
     type AssetResponseDto,
     type StackResponseDto,
@@ -36,8 +29,6 @@
   import { fly } from 'svelte/transition';
   import Thumbnail from '../assets/thumbnail/thumbnail.svelte';
   import { NotificationType, notificationController } from '../shared-components/notification/notification';
-  import ActivityStatus from './activity-status.svelte';
-  import ActivityViewer from './activity-viewer.svelte';
   import AssetViewerNavBar from './asset-viewer-nav-bar.svelte';
   import DetailPanel from './detail-panel.svelte';
   import CropArea from './editor/crop-tool/crop-area.svelte';
@@ -56,7 +47,6 @@
     isShared?: boolean;
     album?: AlbumResponseDto | null;
     onAction?: OnAction | undefined;
-    reactions?: ActivityResponseDto[];
     onClose: (dto: { asset: AssetResponseDto }) => void;
     onNext: () => void;
     onPrevious: () => void;
@@ -72,7 +62,6 @@
     isShared = false,
     album = null,
     onAction = undefined,
-    reactions = $bindable([]),
     onClose,
     onNext,
     onPrevious,
@@ -97,7 +86,6 @@
   let previewStackedAsset: AssetResponseDto | undefined = $state();
   let isShowActivity = $state(false);
   let isShowEditor = $state(false);
-  let isLiked: ActivityResponseDto | null = $state(null);
   let numberOfComments = $state(0);
   let fullscreenElement = $state<Element>();
   let unsubscribes: (() => void)[] = [];
@@ -331,12 +319,6 @@
   $effect(() => {
     if (album && !album.isActivityEnabled && numberOfComments === 0) {
       isShowActivity = false;
-    }
-  });
-  $effect(() => {
-    if (isShared && asset.id) {
-      handlePromiseError(getFavorite());
-      handlePromiseError(getNumberOfComments());
     }
   });
   $effect(() => {

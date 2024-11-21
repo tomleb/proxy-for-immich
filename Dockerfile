@@ -15,7 +15,7 @@ FROM scratch AS proxy
 COPY --from=proxy-build /usr/bin/immich-proxy /immich-proxy
 
 # Generates the OpenAPI SDK from the specification
-FROM node:22.10.0-alpine3.20@sha256:fc95a044b87e95507c60c1f8c829e5d98ddf46401034932499db370c494ef0ff AS openapi-gen-build
+FROM node:22.11.0-alpine3.20@sha256:dc8ba2f61dd86c44e43eb25a7812ad03c5b1b224a19fc6f77e1eb9e5669f0b82 AS openapi-gen-build
 WORKDIR /usr/src/open-api
 COPY open-api/typescript-sdk/package*.json open-api/typescript-sdk/tsconfig*.json ./typescript-sdk/
 RUN npm --prefix typescript-sdk ci
@@ -26,7 +26,7 @@ FROM scratch AS openapi-gen
 COPY --from=openapi-gen-build /usr/src/open-api/typescript-sdk/ /
 
 # Builds immich's web UI
-FROM node:22.10.0-alpine3.20@sha256:fc95a044b87e95507c60c1f8c829e5d98ddf46401034932499db370c494ef0ff AS web
+FROM node:22.11.0-alpine3.20@sha256:dc8ba2f61dd86c44e43eb25a7812ad03c5b1b224a19fc6f77e1eb9e5669f0b82 AS web
 WORKDIR /usr/src/app
 COPY web/package*.json web/svelte.config.js ./
 RUN npm ci

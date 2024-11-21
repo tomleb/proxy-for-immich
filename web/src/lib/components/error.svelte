@@ -61,47 +61,6 @@
               {/if}
             </div>
           </div>
-
-          <hr />
-
-          <div class="flex place-content-center place-items-center justify-around">
-            <!-- href="https://github.com/immich-app/immich/issues/new" -->
-            <a
-              href="https://discord.immich.app"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex grow basis-0 justify-center p-4"
-            >
-              <div class="flex flex-col place-content-center place-items-center gap-2">
-                <Icon path={mdiMessage} size={24} />
-                <p class="text-sm">{$t('get_help')}</p>
-              </div>
-            </a>
-
-            <a
-              href="https://github.com/immich-app/immich/releases"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex grow basis-0 justify-center p-4"
-            >
-              <div class="flex flex-col place-content-center place-items-center gap-2">
-                <Icon path={mdiPartyPopper} size={24} />
-                <p class="text-sm">{$t('read_changelog')}</p>
-              </div>
-            </a>
-
-            <a
-              href="https://immich.app/docs/guides/docker-help"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex grow basis-0 justify-center p-4"
-            >
-              <div class="flex flex-col place-content-center place-items-center gap-2">
-                <Icon path={mdiCodeTags} size={24} />
-                <p class="text-sm">{$t('check_logs')}</p>
-              </div>
-            </a>
-          </div>
         </div>
       </div>
     </div>

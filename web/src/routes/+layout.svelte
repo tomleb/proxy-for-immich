@@ -14,12 +14,10 @@
   import { serverConfig } from '$lib/stores/server-config.store';
 
   import { user } from '$lib/stores/user.store';
-  import { closeWebsocketConnection, openWebsocketConnection } from '$lib/stores/websocket';
   import { copyToClipboard, setKey } from '$lib/utils';
   import { onDestroy, onMount, type Snippet } from 'svelte';
   import '../app.css';
   import { isAssetViewerRoute, isSharedLinkRoute } from '$lib/utils/navigation';
-  import DialogWrapper from '$lib/components/shared-components/dialog/dialog-wrapper.svelte';
   import { t } from 'svelte-i18n';
   import Error from '$lib/components/error.svelte';
   import { shortcut } from '$lib/actions/shortcut';
@@ -83,13 +81,6 @@
   run(() => {
     changeTheme($colorTheme);
   });
-  run(() => {
-    if ($user) {
-      openWebsocketConnection();
-    } else {
-      closeWebsocketConnection();
-    }
-  });
 </script>
 
 <svelte:head>
@@ -118,4 +109,3 @@
 
 <DownloadPanel />
 <NotificationList />
-<DialogWrapper />

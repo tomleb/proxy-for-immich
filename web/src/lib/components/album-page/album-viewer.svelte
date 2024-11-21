@@ -19,11 +19,15 @@
   import { t } from 'svelte-i18n';
   import { onDestroy } from 'svelte';
 
-  export let sharedLink: SharedLinkResponseDto;
-  export let user: UserResponseDto | undefined = undefined;
+  interface Props {
+    sharedLink: SharedLinkResponseDto;
+    user?: UserResponseDto | undefined;
+  }
+
+  let { sharedLink, user = undefined }: Props = $props();
 
   const album = sharedLink.album as AlbumResponseDto;
-  let innerWidth: number;
+  let innerWidth: number = $state(0);
 
   let { isViewing: showAssetViewer } = assetViewingStore;
 
@@ -62,20 +66,20 @@
     </AssetSelectControlBar>
   {:else}
     <ControlAppBar showBackButton={false}>
-      <svelte:fragment slot="leading">
+      {#snippet leading()}
         <ImmichLogoSmallLink width={innerWidth} />
-      </svelte:fragment>
+      {/snippet}
 
-      <svelte:fragment slot="trailing">
+      {#snippet trailing()}
         {#if album.assetCount > 0 && sharedLink.allowDownload}
           <CircleIconButton
             title={$t('download')}
-            on:click={() => downloadAlbum(album)}
+            onclick={() => downloadAlbum(album)}
             icon={mdiFolderDownloadOutline}
           />
         {/if}
         <ThemeButton />
-      </svelte:fragment>
+      {/snippet}
     </ControlAppBar>
   {/if}
 </header>

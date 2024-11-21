@@ -1,29 +1,35 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { afterNavigate, beforeNavigate } from '$app/navigation';
   import { page } from '$app/stores';
   import DownloadPanel from '$lib/components/asset-viewer/download-panel.svelte';
+  import AppleHeader from '$lib/components/shared-components/apple-header.svelte';
   import FullscreenContainer from '$lib/components/shared-components/fullscreen-container.svelte';
   import NavigationLoadingBar from '$lib/components/shared-components/navigation-loading-bar.svelte';
+  import NotificationList from '$lib/components/shared-components/notification/notification-list.svelte';
   import { Theme } from '$lib/constants';
   import { colorTheme, handleToggleTheme, type ThemeSetting } from '$lib/stores/preferences.store';
 
+  import { serverConfig } from '$lib/stores/server-config.store';
+
+  import { user } from '$lib/stores/user.store';
   import { closeWebsocketConnection, openWebsocketConnection } from '$lib/stores/websocket';
   import { copyToClipboard, setKey } from '$lib/utils';
-  import { onDestroy, onMount } from 'svelte';
+  import { onDestroy, onMount, type Snippet } from 'svelte';
   import '../app.css';
   import { isAssetViewerRoute, isSharedLinkRoute } from '$lib/utils/navigation';
   import DialogWrapper from '$lib/components/shared-components/dialog/dialog-wrapper.svelte';
   import { t } from 'svelte-i18n';
   import Error from '$lib/components/error.svelte';
-
-  let showNavigationLoadingBar = false;
-  $: changeTheme($colorTheme);
-
-  $: if (false) {
-    openWebsocketConnection();
-  } else {
-    closeWebsocketConnection();
+  import { shortcut } from '$lib/actions/shortcut';
+  interface Props {
+    children?: Snippet;
   }
+
+  let { children }: Props = $props();
+
+  let showNavigationLoadingBar = $state(false);
 
   const changeTheme = (theme: ThemeSetting) => {
     if (theme.system) {
@@ -41,6 +47,10 @@
     if ($colorTheme.system) {
       handleToggleTheme();
     }
+  };
+
+  const getMyImmichLink = () => {
+    return new URL($page.url.pathname + $page.url.search, 'https://my.immich.app');
   };
 
   onMount(() => {
@@ -70,6 +80,16 @@
   afterNavigate(() => {
     showNavigationLoadingBar = false;
   });
+  run(() => {
+    changeTheme($colorTheme);
+  });
+  run(() => {
+    if ($user) {
+      openWebsocketConnection();
+    } else {
+      closeWebsocketConnection();
+    }
+  });
 </script>
 
 <svelte:head>
@@ -89,7 +109,7 @@
 {#if $page.data.error}
   <Error error={$page.data.error}></Error>
 {:else}
-  <slot />
+  {@render children?.()}
 {/if}
 
 {#if showNavigationLoadingBar}
@@ -97,4 +117,5 @@
 {/if}
 
 <DownloadPanel />
+<NotificationList />
 <DialogWrapper />

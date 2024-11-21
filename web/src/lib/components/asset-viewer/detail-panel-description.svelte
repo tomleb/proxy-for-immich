@@ -1,13 +1,14 @@
 <script lang="ts">
-  import { handleError } from '$lib/utils/handle-error';
   import { type AssetResponseDto } from '@immich/sdk';
-  import AutogrowTextarea from '$lib/components/shared-components/autogrow-textarea.svelte';
-  import { t } from 'svelte-i18n';
 
-  export let asset: AssetResponseDto;
-  export let isOwner: boolean;
+  interface Props {
+    asset: AssetResponseDto;
+    isOwner: boolean;
+  }
 
-  $: description = asset.exifInfo?.description || '';
+  let { asset, isOwner }: Props = $props();
+
+  let description = $derived(asset.exifInfo?.description || '');
 </script>
 
 {#if description}

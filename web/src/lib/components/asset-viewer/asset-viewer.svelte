@@ -5,6 +5,7 @@
   import NextAssetAction from '$lib/components/asset-viewer/actions/next-asset-action.svelte';
   import PreviousAssetAction from '$lib/components/asset-viewer/actions/previous-asset-action.svelte';
   import { AssetAction, ProjectionType } from '$lib/constants';
+  import { updateNumberOfComments } from '$lib/stores/activity.store';
   import { closeEditorCofirm } from '$lib/stores/asset-editor.store';
   import { assetViewingStore } from '$lib/stores/asset-viewing.store';
   import type { AssetStore } from '$lib/stores/assets.store';
@@ -19,12 +20,11 @@
     AssetTypeEnum,
     getAllAlbums,
     getStack,
-    type ActivityResponseDto,
     type AlbumResponseDto,
     type AssetResponseDto,
     type StackResponseDto,
   } from '@immich/sdk';
-  import { onDestroy, onMount } from 'svelte';
+  import { onDestroy, onMount, untrack } from 'svelte';
   import { t } from 'svelte-i18n';
   import { fly } from 'svelte/transition';
   import Thumbnail from '../assets/thumbnail/thumbnail.svelte';
@@ -33,23 +33,40 @@
   import DetailPanel from './detail-panel.svelte';
   import CropArea from './editor/crop-tool/crop-area.svelte';
   import EditorPanel from './editor/editor-panel.svelte';
-  import PanoramaViewer from './panorama-viewer.svelte';
   import PhotoViewer from './photo-viewer.svelte';
   import SlideshowBar from './slideshow-bar.svelte';
   import VideoViewer from './video-wrapper-viewer.svelte';
+  import ImagePanoramaViewer from './image-panorama-viewer.svelte';
 
-  export let assetStore: AssetStore | null = null;
-  export let asset: AssetResponseDto;
-  export let preloadAssets: AssetResponseDto[] = [];
-  export let showNavigation = true;
-  export let withStacked = false;
-  export let isShared = false;
-  export let album: AlbumResponseDto | null = null;
-  export let onAction: OnAction | undefined = undefined;
-  export let reactions: ActivityResponseDto[] = [];
-  export let onClose: (dto: { asset: AssetResponseDto }) => void;
-  export let onNext: () => void;
-  export let onPrevious: () => void;
+  interface Props {
+    assetStore?: AssetStore | null;
+    asset: AssetResponseDto;
+    preloadAssets?: AssetResponseDto[];
+    showNavigation?: boolean;
+    withStacked?: boolean;
+    isShared?: boolean;
+    album?: AlbumResponseDto | null;
+    onAction?: OnAction | undefined;
+    onClose: (dto: { asset: AssetResponseDto }) => void;
+    onNext: () => void;
+    onPrevious: () => void;
+    copyImage?: () => Promise<void>;
+  }
+
+  let {
+    assetStore = null,
+    asset = $bindable(),
+    preloadAssets = $bindable([]),
+    showNavigation = true,
+    withStacked = false,
+    isShared = false,
+    album = null,
+    onAction = undefined,
+    onClose,
+    onNext,
+    onPrevious,
+    copyImage = $bindable(),
+  }: Props = $props();
 
   const { setAsset } = assetViewingStore;
   const {
@@ -60,26 +77,22 @@
     slideshowTransition,
   } = slideshowStore;
 
-  let appearsInAlbums: AlbumResponseDto[] = [];
-  let shouldPlayMotionPhoto = false;
+  let appearsInAlbums: AlbumResponseDto[] = $state([]);
+  let shouldPlayMotionPhoto = $state(false);
   let sharedLink = getSharedLink();
   let enableDetailPanel = asset.hasMetadata;
   let slideshowStateUnsubscribe: () => void;
   let shuffleSlideshowUnsubscribe: () => void;
-  let previewStackedAsset: AssetResponseDto | undefined;
-  let isShowActivity = false;
-  let isShowEditor = false;
-  let isLiked: ActivityResponseDto | null = null;
-  let numberOfComments: number;
-  let fullscreenElement: Element;
+  let previewStackedAsset: AssetResponseDto | undefined = $state();
+  let isShowActivity = $state(false);
+  let isShowEditor = $state(false);
+  let numberOfComments = $state(0);
+  let fullscreenElement = $state<Element>();
   let unsubscribes: (() => void)[] = [];
-  let selectedEditType: string = '';
-  let stack: StackResponseDto | null = null;
+  let selectedEditType: string = $state('');
+  let stack: StackResponseDto | null = $state(null);
 
-  let zoomToggle = () => void 0;
-  let copyImage: () => Promise<void>;
-
-  $: isFullScreen = fullscreenElement !== null;
+  let zoomToggle = $state(() => void 0);
 
   const refreshStack = async () => {
     if (isSharedLink()) {
@@ -94,20 +107,12 @@
       stack = null;
     }
 
-    if (stack && stack?.assets.length > 1) {
-      preloadAssets.push(stack.assets[1]);
-    }
+    untrack(() => {
+      if (stack && stack?.assets.length > 1) {
+        preloadAssets.push(stack.assets[1]);
+      }
+    });
   };
-
-  $: if (asset) {
-    handlePromiseError(refreshStack());
-  }
-
-  $: {
-    if (album && !album.isActivityEnabled && numberOfComments === 0) {
-      isShowActivity = false;
-    }
-  }
 
   const onAssetUpdate = (assetUpdate: AssetResponseDto) => {
     if (assetUpdate.id === asset.id) {
@@ -156,12 +161,6 @@
       unsubscribe();
     }
   });
-
-  $: {
-    if (asset.id && !sharedLink) {
-      handlePromiseError(handleGetAllAlbums());
-    }
-  }
 
   const handleGetAllAlbums = async () => {
     if (isSharedLink()) {
@@ -252,7 +251,7 @@
    * Slide show mode
    */
 
-  let assetViewerHtmlElement: HTMLElement;
+  let assetViewerHtmlElement = $state<HTMLElement>();
 
   const slideshowHistory = new SlideshowHistory((asset) => {
     setAsset(asset);
@@ -267,7 +266,7 @@
 
   const handlePlaySlideshow = async () => {
     try {
-      await assetViewerHtmlElement.requestFullscreen?.();
+      await assetViewerHtmlElement?.requestFullscreen?.();
     } catch (error) {
       handleError(error, $t('errors.unable_to_enter_fullscreen'));
       $slideshowState = SlideshowState.StopSlideshow;
@@ -299,6 +298,7 @@
         break;
       }
 
+      case AssetAction.KEEP_THIS_DELETE_OTHERS:
       case AssetAction.UNSTACK: {
         closeViewer();
       }
@@ -310,6 +310,22 @@
   const handleUpdateSelectedEditType = (type: string) => {
     selectedEditType = type;
   };
+  let isFullScreen = $derived(fullscreenElement !== null);
+  $effect(() => {
+    if (asset) {
+      handlePromiseError(refreshStack());
+    }
+  });
+  $effect(() => {
+    if (album && !album.isActivityEnabled && numberOfComments === 0) {
+      isShowActivity = false;
+    }
+  });
+  $effect(() => {
+    if (asset.id && !sharedLink) {
+      handlePromiseError(handleGetAllAlbums());
+    }
+  });
 </script>
 
 <svelte:document bind:fullscreenElement />
@@ -335,11 +351,12 @@
         onShowDetail={toggleDetailPanel}
         onClose={closeViewer}
       >
-        <MotionPhotoAction
-          slot="motion-photo"
-          isPlaying={shouldPlayMotionPhoto}
-          onClick={(shouldPlay) => (shouldPlayMotionPhoto = shouldPlay)}
-        />
+        {#snippet motionPhoto()}
+          <MotionPhotoAction
+            isPlaying={shouldPlayMotionPhoto}
+            onClick={(shouldPlay) => (shouldPlayMotionPhoto = shouldPlay)}
+          />
+        {/snippet}
       </AssetViewerNavBar>
     </div>
   {/if}
@@ -356,7 +373,7 @@
       <div class="z-[1000] absolute w-full flex">
         <SlideshowBar
           {isFullScreen}
-          onSetToFullScreen={() => assetViewerHtmlElement.requestFullscreen?.()}
+          onSetToFullScreen={() => assetViewerHtmlElement?.requestFullscreen?.()}
           onPrevious={() => navigateAsset('previous')}
           onNext={() => navigateAsset('next')}
           onClose={() => ($slideshowState = SlideshowState.StopSlideshow)}
@@ -374,7 +391,7 @@
             {preloadAssets}
             onPreviousAsset={() => navigateAsset('previous')}
             onNextAsset={() => navigateAsset('next')}
-            on:close={closeViewer}
+            onClose={closeViewer}
             haveFadeTransition={false}
             {sharedLink}
           />
@@ -386,9 +403,9 @@
             loopVideo={true}
             onPreviousAsset={() => navigateAsset('previous')}
             onNextAsset={() => navigateAsset('next')}
-            on:close={closeViewer}
-            on:onVideoEnded={() => navigateAsset()}
-            on:onVideoStarted={handleVideoStarted}
+            onClose={closeViewer}
+            onVideoEnded={() => navigateAsset()}
+            onVideoStarted={handleVideoStarted}
           />
         {/if}
       {/key}
@@ -403,13 +420,12 @@
               loopVideo={$slideshowState !== SlideshowState.PlaySlideshow}
               onPreviousAsset={() => navigateAsset('previous')}
               onNextAsset={() => navigateAsset('next')}
-              on:close={closeViewer}
-              on:onVideoEnded={() => (shouldPlayMotionPhoto = false)}
+              onVideoEnded={() => (shouldPlayMotionPhoto = false)}
             />
           {:else if asset.exifInfo?.projectionType === ProjectionType.EQUIRECTANGULAR || (asset.originalPath && asset.originalPath
                 .toLowerCase()
                 .endsWith('.insp'))}
-            <PanoramaViewer {asset} />
+            <ImagePanoramaViewer {asset} />
           {:else if isShowEditor && selectedEditType === 'crop'}
             <CropArea {asset} />
           {:else}
@@ -420,7 +436,7 @@
               {preloadAssets}
               onPreviousAsset={() => navigateAsset('previous')}
               onNextAsset={() => navigateAsset('next')}
-              on:close={closeViewer}
+              onClose={closeViewer}
               {sharedLink}
               haveFadeTransition={$slideshowState === SlideshowState.None || $slideshowTransition}
             />
@@ -433,9 +449,9 @@
             loopVideo={$slideshowState !== SlideshowState.PlaySlideshow}
             onPreviousAsset={() => navigateAsset('previous')}
             onNextAsset={() => navigateAsset('next')}
-            on:close={closeViewer}
-            on:onVideoEnded={() => navigateAsset()}
-            on:onVideoStarted={handleVideoStarted}
+            onClose={closeViewer}
+            onVideoEnded={() => navigateAsset()}
+            onVideoStarted={handleVideoStarted}
           />
         {/if}
       {/key}
@@ -477,7 +493,7 @@
       class="z-[1002] flex place-item-center place-content-center absolute bottom-0 w-full col-span-4 col-start-1 overflow-x-auto horizontal-scrollbar"
     >
       <div class="relative w-full whitespace-nowrap transition-all">
-        {#each stackedAssets as stackedAsset, index (stackedAsset.id)}
+        {#each stackedAssets as stackedAsset (stackedAsset.id)}
           <div
             class="{stackedAsset.id == asset.id
               ? '-translate-y-[1px]'
@@ -490,7 +506,6 @@
               asset={stackedAsset}
               onClick={(stackedAsset) => {
                 asset = stackedAsset;
-                preloadAssets = index + 1 >= stackedAssets.length ? [] : [stackedAssets[index + 1]];
               }}
               onMouseEvent={({ isMouseOver }) => handleStackedAssetMouseEvent(isMouseOver, stackedAsset)}
               disableMouseOver

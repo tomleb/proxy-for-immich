@@ -8,7 +8,6 @@ import { isSelectingAllAssets, type AssetStore } from '$lib/stores/assets.store'
 import { downloadManager } from '$lib/stores/download';
 import { preferences } from '$lib/stores/user.store';
 import { downloadRequest, getKey, withError } from '$lib/utils';
-import { createAlbum } from '$lib/utils/album-utils';
 import { getByteUnitString } from '$lib/utils/byte-units';
 import { getFormatter } from '$lib/utils/i18n';
 import {
@@ -27,32 +26,6 @@ import { DateTime } from 'luxon';
 import { t } from 'svelte-i18n';
 import { get } from 'svelte/store';
 import { handleError } from './handle-error';
-
-export const addAssetsToNewAlbum = async (albumName: string, assetIds: string[]) => {
-  const album = await createAlbum(albumName, assetIds);
-  if (!album) {
-    return;
-  }
-  const $t = get(t);
-  notificationController.show({
-    type: NotificationType.Info,
-    timeout: 5000,
-    component: {
-      type: FormatBoldMessage,
-      props: {
-        key: 'assets_added_to_name_count',
-        values: { count: assetIds.length, name: albumName, hasName: !!albumName },
-      },
-    },
-    button: {
-      text: $t('view_album'),
-      onClick() {
-        return goto(`${AppRoute.ALBUMS}/${album.id}`);
-      },
-    },
-  });
-  return album;
-};
 
 export const downloadAlbum = async (album: AlbumResponseDto) => {
   await downloadArchive(`${album.albumName}.zip`, {

@@ -161,17 +161,6 @@ export type DownloadResponseDto = {
     archives: DownloadArchiveInfo[];
     totalSize: number;
 };
-export type ServerConfigDto = {
-    externalDomain: string;
-    isInitialized: boolean;
-    isOnboarded: boolean;
-    loginPageMessage: string;
-    mapDarkStyleUrl: string;
-    mapLightStyleUrl: string;
-    oauthButtonText: string;
-    trashDays: number;
-    userDeleteDelay: number;
-};
 export type SharedLinkResponseDto = {
     album?: AlbumResponseDto;
     allowDownload: boolean;
@@ -309,14 +298,6 @@ export function getDownloadInfo({ key, downloadInfoDto }: {
         method: "POST",
         body: downloadInfoDto
     })));
-}
-export function getServerConfig(opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: ServerConfigDto;
-    }>("/server/config", {
-        ...opts
-    }));
 }
 export function getMySharedLink({ key, password, token }: {
     key?: string;

@@ -311,18 +311,6 @@ export function getSharedLinkById({ id }: {
         ...opts
     }));
 }
-export function searchStacks({ primaryAssetId }: {
-    primaryAssetId?: string;
-}, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: StackResponseDto[];
-    }>(`/stacks${QS.query(QS.explode({
-        primaryAssetId
-    }))}`, {
-        ...opts
-    }));
-}
 export function getStack({ id }: {
     id: string;
 }, opts?: Oazapfts.RequestOpts) {

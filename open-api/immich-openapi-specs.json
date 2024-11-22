@@ -473,50 +473,6 @@
         ]
       }
     },
-    "/stacks": {
-      "get": {
-        "operationId": "searchStacks",
-        "parameters": [
-          {
-            "name": "primaryAssetId",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/StackResponseDto"
-                  },
-                  "type": "array"
-                }
-              }
-            },
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          },
-          {
-            "cookie": []
-          },
-          {
-            "api_key": []
-          }
-        ],
-        "tags": [
-          "Stacks"
-        ]
-      }
-    },
     "/stacks/{id}": {
       "get": {
         "operationId": "getStack",

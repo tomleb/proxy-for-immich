@@ -12,9 +12,6 @@ import (
 )
 
 type APIReverseProxy struct {
-	upstreamURL *url.URL
-	host        string
-
 	reverseProxy *httputil.ReverseProxy
 }
 
@@ -27,6 +24,25 @@ func NewAPIReverseProxy(upstream string, host string) (*APIReverseProxy, error) 
 	reverseProxy := &httputil.ReverseProxy{
 		Director: func(req *http.Request) {
 			rewriteRequestURL(req, upstreamURL)
+			headers := http.Header{}
+
+			allowedHeaders := []string{
+				"X-Forwarded-For",
+				"X-Forwarded-Host",
+				"X-Forwarded-Proto",
+				"User-Agent",
+			}
+			for _, header := range allowedHeaders {
+				vals, ok := req.Header[header]
+				if !ok {
+					continue
+				}
+
+				for _, val := range vals {
+					headers.Add(header, val)
+				}
+			}
+			req.Header = headers
 			req.Host = host
 		},
 		ModifyResponse: func(resp *http.Response) error {
@@ -38,8 +54,6 @@ func NewAPIReverseProxy(upstream string, host string) (*APIReverseProxy, error) 
 	}
 
 	return &APIReverseProxy{
-		upstreamURL:  upstreamURL,
-		host:         host,
 		reverseProxy: reverseProxy,
 	}, nil
 }

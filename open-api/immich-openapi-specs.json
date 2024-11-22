@@ -690,41 +690,6 @@
         ]
       }
     },
-    "/tags": {
-      "get": {
-        "operationId": "getAllTags",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/TagResponseDto"
-                  },
-                  "type": "array"
-                }
-              }
-            },
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          },
-          {
-            "cookie": []
-          },
-          {
-            "api_key": []
-          }
-        ],
-        "tags": [
-          "Tags"
-        ]
-      }
-    },
     "/timeline/bucket": {
       "get": {
         "operationId": "getTimeBucket",

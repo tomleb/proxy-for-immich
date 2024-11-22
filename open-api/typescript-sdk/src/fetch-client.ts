@@ -386,14 +386,6 @@ export function getStack({ id }: {
         ...opts
     }));
 }
-export function getAllTags(opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: TagResponseDto[];
-    }>("/tags", {
-        ...opts
-    }));
-}
 export function getTimeBucket({ albumId, isArchived, isFavorite, isTrashed, key, order, personId, size, tagId, timeBucket, userId, withPartners, withStacked }: {
     albumId?: string;
     isArchived?: boolean;

@@ -1,6 +1,5 @@
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
-import { foldersStore } from '$lib/stores/folders.store';
 import { purchaseStore } from '$lib/stores/purchase.store';
 import { serverInfo } from '$lib/stores/server-info.store';
 import { preferences as preferences$, resetSavedUser, user as user$ } from '$lib/stores/user.store';
@@ -33,6 +32,5 @@ export const handleLogout = async (redirectUri: string) => {
     }
   } finally {
     resetSavedUser();
-    foldersStore.clearCache();
   }
 };

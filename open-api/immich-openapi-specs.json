@@ -448,27 +448,6 @@
         ]
       }
     },
-    "/server/ping": {
-      "get": {
-        "operationId": "pingServer",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ServerPingResponse"
-                }
-              }
-            },
-            "description": ""
-          }
-        },
-        "tags": [
-          "Server"
-        ]
-      }
-    },
     "/shared-links/me": {
       "get": {
         "operationId": "getMySharedLink",

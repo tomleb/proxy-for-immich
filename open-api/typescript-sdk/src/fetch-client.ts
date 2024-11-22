@@ -172,10 +172,6 @@ export type ServerConfigDto = {
     trashDays: number;
     userDeleteDelay: number;
 };
-export type ServerPingResponse = {};
-export type ServerPingResponseRead = {
-    res: string;
-};
 export type SharedLinkResponseDto = {
     album?: AlbumResponseDto;
     allowDownload: boolean;
@@ -319,14 +315,6 @@ export function getServerConfig(opts?: Oazapfts.RequestOpts) {
         status: 200;
         data: ServerConfigDto;
     }>("/server/config", {
-        ...opts
-    }));
-}
-export function pingServer(opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: ServerPingResponseRead;
-    }>("/server/ping", {
         ...opts
     }));
 }

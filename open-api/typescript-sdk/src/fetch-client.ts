@@ -186,20 +186,6 @@ export type TimeBucketResponseDto = {
     count: number;
     timeBucket: string;
 };
-export function getAllAlbums({ assetId, shared }: {
-    assetId?: string;
-    shared?: boolean;
-}, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: AlbumResponseDto[];
-    }>(`/albums${QS.query(QS.explode({
-        assetId,
-        shared
-    }))}`, {
-        ...opts
-    }));
-}
 export function getAlbumInfo({ id, key, withoutAssets }: {
     id: string;
     key?: string;

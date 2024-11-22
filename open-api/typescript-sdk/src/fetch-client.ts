@@ -330,14 +330,6 @@ export function pingServer(opts?: Oazapfts.RequestOpts) {
         ...opts
     }));
 }
-export function getAllSharedLinks(opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: SharedLinkResponseDto[];
-    }>("/shared-links", {
-        ...opts
-    }));
-}
 export function getMySharedLink({ key, password, token }: {
     key?: string;
     password?: string;

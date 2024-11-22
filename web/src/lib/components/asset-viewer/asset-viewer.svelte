@@ -16,7 +16,6 @@
   import { SlideshowHistory } from '$lib/utils/slideshow-history';
   import {
     AssetTypeEnum,
-    getAllAlbums,
     getStack,
     type AlbumResponseDto,
     type AssetResponseDto,
@@ -149,15 +148,6 @@
   });
 
   const handleGetAllAlbums = async () => {
-    if (isSharedLink()) {
-      return;
-    }
-
-    try {
-      appearsInAlbums = await getAllAlbums({ assetId: asset.id });
-    } catch (error) {
-      console.error('Error getting album that asset belong to', error);
-    }
   };
 
   const handleOpenActivity = () => {

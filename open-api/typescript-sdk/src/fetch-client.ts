@@ -161,21 +161,6 @@ export type DownloadResponseDto = {
     archives: DownloadArchiveInfo[];
     totalSize: number;
 };
-export type ServerConfigDto = {
-    externalDomain: string;
-    isInitialized: boolean;
-    isOnboarded: boolean;
-    loginPageMessage: string;
-    mapDarkStyleUrl: string;
-    mapLightStyleUrl: string;
-    oauthButtonText: string;
-    trashDays: number;
-    userDeleteDelay: number;
-};
-export type ServerPingResponse = {};
-export type ServerPingResponseRead = {
-    res: string;
-};
 export type SharedLinkResponseDto = {
     album?: AlbumResponseDto;
     allowDownload: boolean;
@@ -201,20 +186,6 @@ export type TimeBucketResponseDto = {
     count: number;
     timeBucket: string;
 };
-export function getAllAlbums({ assetId, shared }: {
-    assetId?: string;
-    shared?: boolean;
-}, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: AlbumResponseDto[];
-    }>(`/albums${QS.query(QS.explode({
-        assetId,
-        shared
-    }))}`, {
-        ...opts
-    }));
-}
 export function getAlbumInfo({ id, key, withoutAssets }: {
     id: string;
     key?: string;
@@ -314,30 +285,6 @@ export function getDownloadInfo({ key, downloadInfoDto }: {
         body: downloadInfoDto
     })));
 }
-export function getServerConfig(opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: ServerConfigDto;
-    }>("/server/config", {
-        ...opts
-    }));
-}
-export function pingServer(opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: ServerPingResponseRead;
-    }>("/server/ping", {
-        ...opts
-    }));
-}
-export function getAllSharedLinks(opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: SharedLinkResponseDto[];
-    }>("/shared-links", {
-        ...opts
-    }));
-}
 export function getMySharedLink({ key, password, token }: {
     key?: string;
     password?: string;
@@ -364,18 +311,6 @@ export function getSharedLinkById({ id }: {
         ...opts
     }));
 }
-export function searchStacks({ primaryAssetId }: {
-    primaryAssetId?: string;
-}, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: StackResponseDto[];
-    }>(`/stacks${QS.query(QS.explode({
-        primaryAssetId
-    }))}`, {
-        ...opts
-    }));
-}
 export function getStack({ id }: {
     id: string;
 }, opts?: Oazapfts.RequestOpts) {
@@ -383,24 +318,6 @@ export function getStack({ id }: {
         status: 200;
         data: StackResponseDto;
     }>(`/stacks/${encodeURIComponent(id)}`, {
-        ...opts
-    }));
-}
-export function getAllTags(opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: TagResponseDto[];
-    }>("/tags", {
-        ...opts
-    }));
-}
-export function getTagById({ id }: {
-    id: string;
-}, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: TagResponseDto;
-    }>(`/tags/${encodeURIComponent(id)}`, {
         ...opts
     }));
 }
@@ -471,26 +388,6 @@ export function getTimeBuckets({ albumId, isArchived, isFavorite, isTrashed, key
         withPartners,
         withStacked
     }))}`, {
-        ...opts
-    }));
-}
-export function getAssetsByOriginalPath({ path }: {
-    path: string;
-}, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: AssetResponseDto[];
-    }>(`/view/folder${QS.query(QS.explode({
-        path
-    }))}`, {
-        ...opts
-    }));
-}
-export function getUniqueOriginalPaths(opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: string[];
-    }>("/view/folder/unique-paths", {
         ...opts
     }));
 }

@@ -188,7 +188,7 @@ export type TimeBucketResponseDto = {
 };
 export function getAlbumInfo({ id, key, withoutAssets }: {
     id: string;
-    key?: string;
+    key: string;
     withoutAssets?: boolean;
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
@@ -203,7 +203,7 @@ export function getAlbumInfo({ id, key, withoutAssets }: {
 }
 export function getAssetInfo({ id, key }: {
     id: string;
-    key?: string;
+    key: string;
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
@@ -216,7 +216,7 @@ export function getAssetInfo({ id, key }: {
 }
 export function downloadAsset({ id, key }: {
     id: string;
-    key?: string;
+    key: string;
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchBlob<{
         status: 200;
@@ -229,7 +229,7 @@ export function downloadAsset({ id, key }: {
 }
 export function viewAsset({ id, key, size }: {
     id: string;
-    key?: string;
+    key: string;
     size?: AssetMediaSize;
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchBlob<{
@@ -244,7 +244,7 @@ export function viewAsset({ id, key, size }: {
 }
 export function playAssetVideo({ id, key }: {
     id: string;
-    key?: string;
+    key: string;
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchBlob<{
         status: 200;
@@ -256,7 +256,7 @@ export function playAssetVideo({ id, key }: {
     }));
 }
 export function downloadArchive({ key, assetIdsDto }: {
-    key?: string;
+    key: string;
     assetIdsDto: AssetIdsDto;
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchBlob<{
@@ -271,7 +271,7 @@ export function downloadArchive({ key, assetIdsDto }: {
     })));
 }
 export function getDownloadInfo({ key, downloadInfoDto }: {
-    key?: string;
+    key: string;
     downloadInfoDto: DownloadInfoDto;
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
@@ -286,7 +286,7 @@ export function getDownloadInfo({ key, downloadInfoDto }: {
     })));
 }
 export function getMySharedLink({ key, password, token }: {
-    key?: string;
+    key: string;
     password?: string;
     token?: string;
 }, opts?: Oazapfts.RequestOpts) {
@@ -326,7 +326,7 @@ export function getTimeBucket({ albumId, isArchived, isFavorite, isTrashed, key,
     isArchived?: boolean;
     isFavorite?: boolean;
     isTrashed?: boolean;
-    key?: string;
+    key: string;
     order?: AssetOrder;
     personId?: string;
     size: TimeBucketSize;
@@ -362,7 +362,7 @@ export function getTimeBuckets({ albumId, isArchived, isFavorite, isTrashed, key
     isArchived?: boolean;
     isFavorite?: boolean;
     isTrashed?: boolean;
-    key?: string;
+    key: string;
     order?: AssetOrder;
     personId?: string;
     size: TimeBucketSize;

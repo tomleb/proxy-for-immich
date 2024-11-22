@@ -16,7 +16,7 @@
           },
           {
             "name": "key",
-            "required": false,
+            "required": true,
             "in": "query",
             "schema": {
               "type": "string"
@@ -74,7 +74,7 @@
           },
           {
             "name": "key",
-            "required": false,
+            "required": true,
             "in": "query",
             "schema": {
               "type": "string"
@@ -124,7 +124,7 @@
           },
           {
             "name": "key",
-            "required": false,
+            "required": true,
             "in": "query",
             "schema": {
               "type": "string"
@@ -175,7 +175,7 @@
           },
           {
             "name": "key",
-            "required": false,
+            "required": true,
             "in": "query",
             "schema": {
               "type": "string"
@@ -234,7 +234,7 @@
           },
           {
             "name": "key",
-            "required": false,
+            "required": true,
             "in": "query",
             "schema": {
               "type": "string"
@@ -276,7 +276,7 @@
         "parameters": [
           {
             "name": "key",
-            "required": false,
+            "required": true,
             "in": "query",
             "schema": {
               "type": "string"
@@ -328,7 +328,7 @@
         "parameters": [
           {
             "name": "key",
-            "required": false,
+            "required": true,
             "in": "query",
             "schema": {
               "type": "string"
@@ -379,7 +379,7 @@
         "parameters": [
           {
             "name": "key",
-            "required": false,
+            "required": true,
             "in": "query",
             "schema": {
               "type": "string"
@@ -554,7 +554,7 @@
           },
           {
             "name": "key",
-            "required": false,
+            "required": true,
             "in": "query",
             "schema": {
               "type": "string"
@@ -698,7 +698,7 @@
           },
           {
             "name": "key",
-            "required": false,
+            "required": true,
             "in": "query",
             "schema": {
               "type": "string"

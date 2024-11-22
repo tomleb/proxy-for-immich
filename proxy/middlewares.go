@@ -34,6 +34,17 @@ func FilterOpenAPIPaths(next http.Handler, doc *openapi3.T) http.Handler {
 			return
 		}
 
+		query := req.URL.Query()
+		for _, params := range operation.Parameters {
+			if params.Value.In != openapi3.ParameterInQuery {
+				continue
+			}
+			if params.Value.Required && (!query.Has(params.Value.Name) || query.Get(params.Value.Name) == "") {
+				http.Error(w, "Bad request", http.StatusBadRequest)
+				return
+			}
+		}
+
 		next.ServeHTTP(w, req)
 	})
 }

@@ -25,6 +25,7 @@ func NewAPIReverseProxy(upstream string, host string) (*APIReverseProxy, error) 
 		Director: func(req *http.Request) {
 			rewriteRequestURL(req, upstreamURL)
 			headers := http.Header{}
+			fmt.Println(req.Header)
 
 			allowedHeaders := []string{
 				"X-Forwarded-For",

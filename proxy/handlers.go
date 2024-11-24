@@ -32,6 +32,7 @@ func NewAPIReverseProxy(upstream string, host string) (*APIReverseProxy, error) 
 				"X-Forwarded-Host",
 				"X-Forwarded-Proto",
 				"User-Agent",
+				"Accept", " Accept-Encoding", "Accept-Language",
 			}
 			for _, header := range allowedHeaders {
 				vals, ok := req.Header[header]
